@@ -2,9 +2,8 @@
 import sys
 import urllib2
 import numpy as np
-import wget
 import pickle as pkl
-
+import threading
 data_file = 'cityid_url-3.txt'
 output_dir = 'images/'
 num_images = 0
@@ -28,10 +27,12 @@ rand_urls = urls[rand_ind]
 pkl.dump(rand_urls, open('random_urls.p', 'w+'))
 '''
 
-rand_urls = pkl.load(open('random_urls.p'))
+rand_urls = pkl.load(open('../random_urls.p'))
 
 
-for url in rand_urls:
+
+#for url in rand_urls:
+def fetch_url(url):
 	try: 
 		rel = url.split('im_')
 		rel = rel[1].split('_0.000000')
@@ -39,8 +40,14 @@ for url in rand_urls:
 		response = urllib2.urlopen(url)
 		content = response.read()
 		f_dest = open(output_dir + rel[0] + '.png', 'w+')
+		print output_dir + rel[0] + '.png'
 		f_dest.write(content)
 		f_dest.close()
 	except urllib2.URLError as e:
 		print type(e)
-	break
+
+threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
