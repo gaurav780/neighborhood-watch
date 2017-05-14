@@ -16,7 +16,7 @@ for line in inc_file:
   mean_inc = data[7]
   geoid_to_meaninc[geoid] = mean_inc
 for latlong in lat_longs:
-  print count
+  print (count)
   count+=1
   url = 'http://data.fcc.gov/api/block/find?format=json&latitude=' + latlong[0]+"&longitude="+latlong[1]+'&showall=true'
   try:
@@ -27,5 +27,5 @@ for latlong in lat_longs:
     mean_i = geoid_to_meaninc[geoid]
     ll_fips[latlong]=mean_i
   except urllib2.URLError as e:
-    print type(e)
+    print(type(e))
 pkl.dump(ll_fips,open("ll_to_meaninc_1000.p","w+"))

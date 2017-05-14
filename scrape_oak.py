@@ -1,6 +1,7 @@
 # Open file
+
 import sys
-import urllib2
+import urllib3
 import numpy as np
 import pickle as pkl
 import threading
@@ -27,7 +28,7 @@ rand_urls = urls[rand_ind]
 pkl.dump(rand_urls, open('random_urls.p', 'w+'))
 '''
 
-rand_urls = pkl.load(open('../random_urls.p'))
+rand_urls = pkl.load(open('random_urls.p','rb'))
 
 
 
@@ -37,14 +38,14 @@ def fetch_url(url):
 		rel = url.split('im_')
 		rel = rel[1].split('_0.000000')
 
-		response = urllib2.urlopen(url)
+		response = urllib3.urlopen(url)
 		content = response.read()
 		f_dest = open(output_dir + rel[0] + '.png', 'w+')
-		print output_dir + rel[0] + '.png'
+		print (output_dir + rel[0] + '.png')
 		f_dest.write(content)
 		f_dest.close()
-	except urllib2.URLError as e:
-		print type(e)
+	except urllib3.URLError as e:
+		print (type(e))
 
 threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
 for thread in threads:
