@@ -76,6 +76,6 @@ print '\n'
 '''
 
 #model = my_model(x_train.shape[1:], len(set(y_train)), 'relu')
-hist = my_model.fit(x_train, y_train, epochs=2, validation_data=(x_test, y_test), verbose=1)    
+hist = my_model.fit(x_train, y_train, epochs=10, validation_data=(x_test, y_test), verbose=1)    
 #In the summary, weights and layers from VGG part will be hidden, but they will be fit during the training
 my_model.summary()

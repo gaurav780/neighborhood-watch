@@ -6,10 +6,9 @@ import numpy as np
 import pickle as pkl
 import threading
 data_file = 'cityid_url-3.txt'
-output_dir = 'images/'
+output_dir = 'images_50000/'
 num_images = 0
 
-'''
 urls = []
 
 with open(data_file) as f:
@@ -20,15 +19,15 @@ with open(data_file) as f:
 			num_images += 1
 
 
-indices = np.arange(1, num_images, 6)
+indices = np.arange(num_images)
 urls = np.array(urls)
 #Adjust second parameter for number of images you want to download
-rand_ind = np.random.choice(indices, 1000, replace=False)
+rand_ind = np.random.choice(indices, 50000, replace=False)
 rand_urls = urls[rand_ind]
-pkl.dump(rand_urls, open('random_urls.p', 'w+'))
-'''
+#pkl.dump(rand_urls, open('random_urls_50000.p', 'w+'))
 
-rand_urls = pkl.load(open('random_urls.p','rb'))
+
+#rand_urls = pkl.load(open('random_urls.p','rb'))
 
 
 
@@ -37,7 +36,6 @@ def fetch_url(url):
 	try: 
 		rel = url.split('im_')
 		rel = rel[1].split('_0.000000')
-
 		response = urllib2.urlopen(url)
 		content = response.read()
 		f_dest = open(output_dir + rel[0] + '.png', 'w+')
@@ -46,9 +44,10 @@ def fetch_url(url):
 		f_dest.close()
 	except urllib2.URLError as e:
 		print (type(e))
+res = [fetch_url(url) for url in rand_urls]
 
-threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
-for thread in threads:
-    thread.start()
-for thread in threads:
-    thread.join()
+#threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
+#for thread in threads:
+ #   thread.start()
+#for thread in threads:
+ #   thread.join()
