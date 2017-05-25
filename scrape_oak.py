@@ -5,11 +5,10 @@ import urllib2
 import numpy as np
 import pickle as pkl
 import threading
-<<<<<<< HEAD
 data_file = '../cityid_url-3.txt'
-output_dir = 'images_5000/'
+output_dir = 'images_50000/'
 num_images = 0
-
+'''
 urls = []
 
 with open(data_file) as f:
@@ -27,8 +26,8 @@ rand_ind = np.random.choice(indices, 50000, replace=False)
 rand_urls = urls[rand_ind]
 pkl.dump(rand_urls, open('random_urls_50000.p', 'w+'))
 
-
-#rand_urls = pkl.load(open('random_urls.p','rb'))
+'''
+rand_urls = pkl.load(open('random_urls_50000.p','rb'))
 
 
 
@@ -45,7 +44,7 @@ def fetch_url(url):
 		f_dest.close()
 	except urllib2.URLError as e:
 		print (type(e))
-#res = [fetch_url(url) for url in rand_urls]
+res = [fetch_url(url) for url in rand_urls]
 #threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
 #for thread in threads:
  #   thread.start()
