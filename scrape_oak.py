@@ -5,11 +5,11 @@ import urllib2
 import numpy as np
 import pickle as pkl
 import threading
-data_file = 'cityid_url-3.txt'
-output_dir = 'images/'
+data_file = '../cityid_url-3.txt'
+output_dir = 'images_5000/'
 num_images = 0
 
-'''
+
 urls = []
 
 with open(data_file) as f:
@@ -20,12 +20,12 @@ with open(data_file) as f:
 			num_images += 1
 
 
-indices = np.arange(1, num_images, 6)
+indices = np.arange( num_images)
 urls = np.array(urls)
 #Adjust second parameter for number of images you want to download
-rand_ind = np.random.choice(indices, 1000, replace=False)
+rand_ind = np.random.choice(indices, 50000, replace=False)
 rand_urls = urls[rand_ind]
-pkl.dump(rand_urls, open('random_urls.p', 'w+'))
+pkl.dump(rand_urls, open('random_urls_50000.p', 'w+'))
 '''
 
 rand_urls = pkl.load(open('random_urls.p','rb'))
@@ -52,3 +52,4 @@ for thread in threads:
     thread.start()
 for thread in threads:
     thread.join()
+'''
