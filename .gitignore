@@ -1,3 +1,5 @@
+vgg_16.ckpt
+images_1000/
 images_50000/
 images/
 vgg16_weights.npz
