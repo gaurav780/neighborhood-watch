@@ -1,10 +1,12 @@
 # Open file
-
+from multiprocessing.pool import ThreadPool
 import sys
 import urllib2
 import numpy as np
 import pickle as pkl
 import threading
+import contextlib
+import concurrent.futures
 data_file = '../cityid_url-3.txt'
 output_dir = 'images_50000/'
 num_images = 0
@@ -36,16 +38,26 @@ def fetch_url(url):
 	try: 
 		rel = url.split('im_')
 		rel = rel[1].split('_0.000000')
-		response = urllib2.urlopen(url)
-		content = response.read()
-		f_dest = open(output_dir + rel[0] + '.png', 'w+')
-		print (output_dir + rel[0] + '.png')
-		f_dest.write(content)
-		f_dest.close()
+		with contextlib.closing(urllib2.urlopen(url, timeout=60)) as response:
+		#response = urllib2.urlopen(url, timeout=60)
+			content = response.read()
+			f_dest = open(output_dir + rel[0] + '.png', 'w+')
+			print (output_dir + rel[0] + '.png')
+			f_dest.write(content)
+			print("Found")
+			f_dest.close()
 	except urllib2.URLError as e:
-		print (type(e))
+		print (e.reason)
+
+pool = ThreadPool(1000)
+results = pool.imap_unordered(fetch_url, rand_urls)
+pool.close()
+pool.join()
+
+'''
 threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
 for thread in threads:
   thread.start()
 for thread in threads:
   thread.join()
+'''	
