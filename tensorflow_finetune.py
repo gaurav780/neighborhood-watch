@@ -260,14 +260,19 @@ def main(args):
 
         # Restore only the layers up to fc7 (included)
         # Calling function `init_fn(sess)` will load all the pretrained weights.
-        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8'])
+        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8','vgg_16/conv5'])
         init_fn = tf.contrib.framework.assign_from_checkpoint_fn(model_path, variables_to_restore)
 
         # Initialization operation from scratch for the new "fc8" layers
         # `get_variables` will only return the variables whose name starts with the given pattern
         fc8_variables = tf.contrib.framework.get_variables('vgg_16/fc8')
         fc8_init = tf.variables_initializer(fc8_variables)
-
+	conv5_variables = tf.contrib.framework.get_variables('vgg_16/conv5')
+        conv5_init = tf.variables_initializer(conv5_variables)
+	'''fc7_variables = tf.contrib.framework.get_variables('vgg_16/conv5')
+        fc7_init = tf.variables_initializer(fc7_variables)
+	fc6_variables = tf.contrib.framework.get_variables('vgg_16/fc6')
+        fc6_init = tf.variables_initializer(fc6_variables)'''
         # ---------------------------------------------------------------------
         # Using tf.losses, any loss is added to the tf.GraphKeys.LOSSES collection
         # We can then call the total loss easily
@@ -278,7 +283,10 @@ def main(args):
         # We run minimize the loss only with respect to the fc8 variables (weight and bias).
         fc8_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc8_train_op = fc8_optimizer.minimize(loss, var_list=fc8_variables)
-
+	conv5_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        conv5_train_op = conv5_optimizer.minimize(loss, var_list=conv5_variables)
+	'''fc6_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        fc6_train_op = fc6_optimizer.minimize(loss, var_list=fc6_variables)'''
         # Then we want to finetune the entire model for a few epochs.
         # We run minimize the loss only with respect to all the variables.
         full_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate2)
@@ -298,7 +306,8 @@ def main(args):
     with tf.Session(graph=graph) as sess:
         init_fn(sess)  # load the pretrained weights
         sess.run(fc8_init)  # initialize the new fc8 layer
-
+	sess.run(conv5_init)
+	'''sess.run(fc6_init)'''
         # Update only the last layer for a few epochs.
         for epoch in range(args.num_epochs1):
             # Run an epoch over the training data.
