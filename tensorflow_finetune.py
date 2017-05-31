@@ -261,7 +261,11 @@ def main(args):
 
         # Restore only the layers up to fc7 (included)
         # Calling function `init_fn(sess)` will load all the pretrained weights.
+<<<<<<< HEAD
         variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8','vgg_16/fc7'])
+=======
+        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8','vgg_16/fc7','vgg_16/fc6'])
+>>>>>>> 48c275efa7cd41c6b3acbb59b27df9c20fe9fc60
         init_fn = tf.contrib.framework.assign_from_checkpoint_fn(model_path, variables_to_restore)
 
         # Initialization operation from scratch for the new "fc8" layers
@@ -269,11 +273,19 @@ def main(args):
         fc8_variables = tf.contrib.framework.get_variables('vgg_16/fc8')
         fc8_init = tf.variables_initializer(fc8_variables)
 	# conv5_variables = tf.contrib.framework.get_variables('vgg_16/conv5')
+<<<<<<< HEAD
  #        conv5_init = tf.variables_initializer(conv5_variables)
 	fc7_variables = tf.contrib.framework.get_variables('vgg_16/fc7')
         fc7_init = tf.variables_initializer(fc7_variables)
 	# fc6_variables = tf.contrib.framework.get_variables('vgg_16/fc6')
  #        fc6_init = tf.variables_initializer(fc6_variables)
+=======
+        # conv5_init = tf.variables_initializer(conv5_variables)
+	fc7_variables = tf.contrib.framework.get_variables('vgg_16/fc7')
+        fc7_init = tf.variables_initializer(fc7_variables)
+	fc6_variables = tf.contrib.framework.get_variables('vgg_16/fc6')
+        fc6_init = tf.variables_initializer(fc6_variables)
+>>>>>>> 48c275efa7cd41c6b3acbb59b27df9c20fe9fc60
         # ---------------------------------------------------------------------
         # Using tf.losses, any loss is added to the tf.GraphKeys.LOSSES collection
         # We can then call the total loss easily
@@ -284,12 +296,22 @@ def main(args):
         # We run minimize the loss only with respect to the fc8 variables (weight and bias).
         fc8_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc8_train_op = fc8_optimizer.minimize(loss, var_list=fc8_variables)
+<<<<<<< HEAD
         fc7_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc7_train_op = fc7_optimizer.minimize(loss, var_list=fc7_variables)
 	# conv5_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
  #        conv5_train_op = conv5_optimizer.minimize(loss, var_list=conv5_variables)
 	'''fc6_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc6_train_op = fc6_optimizer.minimize(loss, var_list=fc6_variables)'''
+=======
+	fc7_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+	fc7_train_op = fc7_optimizer.minimize(loss, var_list=fc7_variables)
+	# conv5_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        # conv5_train_op = conv5_optimizer.minimize(loss, var_list=conv5_variables)
+	fc6_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        fc6_train_op = fc6_optimizer.minimize(loss, var_list=fc6_variables)
+
+>>>>>>> 48c275efa7cd41c6b3acbb59b27df9c20fe9fc60
         # Then we want to finetune the entire model for a few epochs.
         # We run minimize the loss only with respect to all the variables.
         full_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate2)
@@ -308,10 +330,17 @@ def main(args):
     # We can call our training operations with `sess.run(train_op)` for instance
     with tf.Session(graph=graph) as sess:
         init_fn(sess)  # load the pretrained weights
+<<<<<<< HEAD
         sess.run(fc8_init) #, fc7_init)  # initialize the new fc8 layer
         sess.run(fc7_init)# initialize the new fc7 layer
 	# sess.run(conv5_init)
 	'''sess.run(fc6_init)'''
+=======
+        sess.run(fc8_init)  # initialize the new fc8 layer
+	# sess.run(conv5_init)
+	sess.run(fc7_init)
+	sess.run(fc6_init)
+>>>>>>> 48c275efa7cd41c6b3acbb59b27df9c20fe9fc60
         # Update only the last layer for a few epochs.
         for epoch in range(args.num_epochs1):
             # Run an epoch over the training data.
@@ -322,8 +351,13 @@ def main(args):
             while True:
                 try:
                     _ = sess.run(fc8_train_op, {is_training: True})
+<<<<<<< HEAD
                     _ = sess.run(fc7_train_op, {is_training: True})
 
+=======
+                    _1 = sess.run(fc7_train_op, {is_training: True})
+                    _2 = sess.run(fc6_train_op, {is_training: True})
+>>>>>>> 48c275efa7cd41c6b3acbb59b27df9c20fe9fc60
                 except tf.errors.OutOfRangeError:
                     break
 
