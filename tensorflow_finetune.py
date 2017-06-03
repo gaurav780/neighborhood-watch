@@ -308,6 +308,7 @@ def main(args):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         tf.get_default_graph().finalize()
+        # saver = tf.train.Saver() #s{'fc8': fc8_init}) 
 
     # --------------------------------------------------------------------------
     # Now that we have built the graph and finalized it, we define the session.
@@ -329,6 +330,7 @@ def main(args):
             # Here we initialize the iterator with the training set.
             # This means that we can go through an entire epoch until the iterator becomes empty.
             sess.run(train_init_op)
+
             while True:
                 try:
                     _ = sess.run(fc8_train_op, {is_training: True})
@@ -364,6 +366,9 @@ def main(args):
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             print('Train accuracy: %f' % train_acc)
             print('Val accuracy: %f\n' % val_acc)
+
+        
+        save_path = tf.train.Saver().save(sess, "VGGconv5model-1000.ckpt") 
 
 
 if __name__ == '__main__':
