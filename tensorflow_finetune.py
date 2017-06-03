@@ -251,8 +251,9 @@ def main(args):
         # We pass a scope to initialize "vgg_16/fc8" weights with he_initializer
         vgg = tf.contrib.slim.nets.vgg
         with slim.arg_scope(vgg.vgg_arg_scope(weight_decay=args.weight_decay)):
-            logits, _ = vgg.vgg_16(images, num_classes=num_classes, is_training=is_training,
+            logits, layers = vgg.vgg_16(images, num_classes=num_classes, is_training=is_training,
                                    dropout_keep_prob=args.dropout_keep_prob)
+            print(layers)
 
         # Specify where the model checkpoint is (pretrained weights).
         model_path = args.model_path
@@ -260,7 +261,7 @@ def main(args):
 
         # Restore only the layers up to fc7 (included)
         # Calling function `init_fn(sess)` will load all the pretrained weights.
-        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8'])
+        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/conv5','vgg_16/fc8','vgg_16/fc7','vgg_16/fc6'])
         init_fn = tf.contrib.framework.assign_from_checkpoint_fn(model_path, variables_to_restore)
 
         # Initialization operation from scratch for the new "fc8" layers
