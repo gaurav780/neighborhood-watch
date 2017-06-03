@@ -6,11 +6,12 @@ matplotlib.use('Agg')
 
 newCkpt = tf.train.NewCheckpointReader("vgg_16.ckpt")
 print newCkpt.get_variable_to_shape_map()
-w = newCkpt.get_tensor('vgg_16/fc7/weights')
+w = newCkpt.get_tensor('vgg_16/fc8/weights')
+print w.shape
 # print tf.shape(W)
 # Visualize the learned weights for each class
 #w = best_softmax.W[:-1,:] # CHANGE TO FC layer pickle
-w = w.reshape(1, 1, 4096, 4096)
+w = w.reshape(32, 32, 4, 1000)
 
 w_min, w_max = np.min(w), np.max(w)
 
@@ -25,4 +26,4 @@ for i in range(len(classes)):
     plt.title(classes[i])
 
 # plt.show()
-plt.savefig('vgg_fc7.png')
+plt.savefig('vgg_fc8.png')

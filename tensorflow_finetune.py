@@ -268,27 +268,34 @@ def main(args):
         # `get_variables` will only return the variables whose name starts with the given pattern
         fc8_variables = tf.contrib.framework.get_variables('vgg_16/fc8')
         fc8_init = tf.variables_initializer(fc8_variables)
-	conv5_variables = tf.contrib.framework.get_variables('vgg_16/conv5')
+        conv5_variables = tf.contrib.framework.get_variables('vgg_16/conv5')
         conv5_init = tf.variables_initializer(conv5_variables)
-	fc7_variables = tf.contrib.framework.get_variables('vgg_16/fc7')
+        fc7_variables = tf.contrib.framework.get_variables('vgg_16/fc7')
         fc7_init = tf.variables_initializer(fc7_variables)
-	fc6_variables = tf.contrib.framework.get_variables('vgg_16/fc6')
+        fc6_variables = tf.contrib.framework.get_variables('vgg_16/fc6')
         fc6_init = tf.variables_initializer(fc6_variables)
+
+        # filter_summary = tf.summary.image("viz", fc8_variables)
+        # tf.summary.image
         # ---------------------------------------------------------------------
         # Using tf.losses, any loss is added to the tf.GraphKeys.LOSSES collection
         # We c then call the total loss easily
+
         tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
         loss = tf.losses.get_total_loss()
+
+        tf.summary.scalar('total_loss', loss)
+        merged_summary_op = tf.summary.merge_all()
 
         # First we want to train only the reinitialized last layer fc8 for a few epochs.
         # We run minimize the loss only with respect to the fc8 variables (weight and bias).
         fc8_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc8_train_op = fc8_optimizer.minimize(loss, var_list=fc8_variables)
-	fc7_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        fc7_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc7_train_op = fc7_optimizer.minimize(loss, var_list=fc7_variables)
-	conv5_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        conv5_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         conv5_train_op = conv5_optimizer.minimize(loss, var_list=conv5_variables)
-	fc6_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
+        fc6_optimizer = tf.train.GradientDescentOptimizer(args.learning_rate1)
         fc6_train_op = fc6_optimizer.minimize(loss, var_list=fc6_variables)
         # Then we want to finetune the entire model for a few epochs.
         # We run minimize the loss only with respect to all the variables.
@@ -306,12 +313,15 @@ def main(args):
     # Now that we have built the graph and finalized it, we define the session.
     # The session is the interface to *run* the computational graph.
     # We can call our training operations with `sess.run(train_op)` for instance
+    # filter_summary = tf.images_summary(fc8_init) 
+    summary_writer = tf.summary.FileWriter('/tmp/logs')
+
     with tf.Session(graph=graph) as sess:
         init_fn(sess)  # load the pretrained weights
         sess.run(fc8_init)  # initialize the new fc8 layer
-	sess.run(fc7_init)
-	sess.run(conv5_init)
-	sess.run(fc6_init)
+        sess.run(fc7_init)
+        sess.run(conv5_init)
+        sess.run(fc6_init)
         # Update only the last layer for a few epochs.
         for epoch in range(args.num_epochs1):
             # Run an epoch over the training data.
@@ -323,9 +333,9 @@ def main(args):
                 try:
                     _ = sess.run(fc8_train_op, {is_training: True})
                     _ = sess.run(fc7_train_op,{is_training: True})
-		    _ = sess.run(fc6_train_op,{is_training: True})
-		    _ = sess.run(conv5_train_op,{is_training: True})
-		except tf.errors.OutOfRangeError:
+                    _ = sess.run(fc6_train_op,{is_training: True})
+                    _ = sess.run(conv5_train_op,{is_training: True})
+                except tf.errors.OutOfRangeError:
                     break
 
             # Check accuracy on the train and val sets every epoch.
@@ -336,14 +346,18 @@ def main(args):
 
 
         # Train the entire model for a few more epochs, continuing with the *same* weights.
+        # idx = 0 
         for epoch in range(args.num_epochs2):
             print('Starting epoch %d / %d' % (epoch + 1, args.num_epochs1))
             sess.run(train_init_op)
             while True:
                 try:
-                    _ = sess.run(full_train_op, {is_training: True})
+                    _, summary_string = sess.run([full_train_op, merged_summary_op], {is_training: True})
+                    # if epoch % 10 == 0: 
+                    summary_writer.add_summary(summary_string, epoch)
                 except tf.errors.OutOfRangeError:
                     break
+            # i += 1
 
             # Check accuracy on the train and val sets every epoch
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
