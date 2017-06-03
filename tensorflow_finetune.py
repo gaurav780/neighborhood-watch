@@ -140,7 +140,7 @@ def main(args):
         # (2) Resize the image so its smaller side is 256 pixels long
         def _parse_function(filename, label):
             image_string = tf.read_file(filename)
-            image_decoded = tf.image.decode_jpeg(image_string, channels=3)          # (1)
+            image_decoded = tf.image.decode_png(image_string, channels=3)          # (1)
             image = tf.cast(image_decoded, tf.float32)
 
             smallest_side = 256.0
