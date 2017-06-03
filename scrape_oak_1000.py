@@ -7,6 +7,7 @@ import pickle as pkl
 import threading
 data_file = '../cityid_url-3.txt'
 output_dir = 'images_50000/'
+output_dir = 'images/'
 num_images = 0
 '''
 urls = []

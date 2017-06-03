@@ -11,6 +11,10 @@ w = newCkpt.get_tensor('vgg_16/fc8/weights')
 # Visualize the learned weights for each class
 #w = best_softmax.W[:-1,:] # CHANGE TO FC layer pickle
 w = w.reshape(32, 32,4,1000)
+print w.shape
+# print tf.shape(W)
+# Visualize the learned weights for each class
+#w = best_softmax.W[:-1,:] # CHANGE TO FC layer pickle
 
 w_min, w_max = np.min(w), np.max(w)
 
