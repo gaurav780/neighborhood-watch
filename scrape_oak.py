@@ -6,7 +6,7 @@ import numpy as np
 import pickle as pkl
 import threading
 import contextlib
-import concurrent.futures
+#import concurrent.futures
 data_file = '../cityid_url-3.txt'
 output_dir = 'images_50000/'
 num_images = 0
@@ -49,15 +49,15 @@ def fetch_url(url):
 	except urllib2.URLError as e:
 		print (e.reason)
 
+'''
 pool = ThreadPool(1000)
-results = pool.imap_unordered(fetch_url, rand_urls)
+results = pool.imap_unordered(fetch_url, rand_urls[:5000])
 pool.close()
 pool.join()
 
 '''
-threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls]
+threads = [threading.Thread(target=fetch_url, args=(url,)) for url in rand_urls[:1000]]
 for thread in threads:
   thread.start()
 for thread in threads:
-  thread.join()
-'''	
+  thread.join()	
