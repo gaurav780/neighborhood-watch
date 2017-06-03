@@ -19,7 +19,7 @@ for line in inc_file:
   geoid_to_meaninc[geoid] = mean_inc
 
 #def fetch_url(latlong):
-for latlong in lat_longs:
+for latlong in lat_longs[:10000]:
   if count%100 == 0:
     print count
   count +=1
@@ -40,5 +40,5 @@ for latlong in lat_longs:
   except urllib2.URLError as e:
     print(type(e))
 
-pkl.dump(ll_fips,open("ll_to_meaninc_50000.p","w+"))
-pkl.dump(ll_buck,open("ll_to_bucket_50000.p","w+"))
+pkl.dump(ll_fips,open("ll_to_meaninc_10000.p","w+"))
+pkl.dump(ll_buck,open("ll_to_bucket_10000.p","w+"))
