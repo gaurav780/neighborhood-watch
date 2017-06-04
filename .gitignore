@@ -3,6 +3,7 @@ images_1000/
 images_50000/
 images/
 train/
+images_*/
 images_test/
 val/
 vgg16_weights.npz
