@@ -42,3 +42,4 @@ for latlong in lat_longs:
 
 pkl.dump(ll_fips,open("ll_to_meaninc_50k_fullcorpus.p","w+"))
 pkl.dump(ll_buck,open("ll_to_bucket_50k_fullcorpus.p","w+"))
+
