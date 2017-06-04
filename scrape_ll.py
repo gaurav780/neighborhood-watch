@@ -10,7 +10,7 @@ ll_fips = {}
 ll_buck = {}
 lat_longs = pkl.load(open("lat_longs_50000.p","rb"))
 count = 0
-inc_file = open("../ACS_15_5YR_S1902_with_ann.csv","rb")
+inc_file = open("./ACS_15_5YR_S1902_with_ann.csv","rb")
 geoid_to_meaninc = {}
 for line in inc_file:
   data = line.split(',')
@@ -40,5 +40,5 @@ for latlong in lat_longs[:10000]:
   except urllib2.URLError as e:
     print(type(e))
 
-pkl.dump(ll_fips,open("ll_to_meaninc_10000.p","w+"))
-pkl.dump(ll_buck,open("ll_to_bucket_10000.p","w+"))
+pkl.dump(ll_fips,open("ll_to_meaninc_50000.p","w+"))
+pkl.dump(ll_buck,open("ll_to_bucket_50000.p","w+"))

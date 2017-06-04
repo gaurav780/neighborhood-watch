@@ -2,10 +2,10 @@ import pickle as pkl
 import shutil 
 import os 
 
-lat_longs =pkl.load(open("lat_longs_1000.p","rb"))
-ll_to_buckets = pkl.load(open("ll_to_buckets_1000.p","rb"))
+lat_longs =pkl.load(open("lat_longs_10000.p","rb"))
+ll_to_buckets = pkl.load(open("ll_to_buckets_10000.p","rb"))
 
-files = os.listdir('./images_test')
+files = os.listdir('./images_10000')
 cutoff = int(len(files)*0.8) 
 idx = 0 
 
@@ -14,9 +14,11 @@ for file in files:
 	f_split = file.split("_")
 	ll = (f_split[0], f_split[1])
 	# print (ll) 
-
-	label = ll_to_buckets[ll]
-	file = './images_test/' + file 
+	if ll in ll_to_buckets:
+		label = ll_to_buckets[ll]
+	else:
+		continue
+	file = './images_10000/' + file 
 	# if idx == 20: 
 	# 	break 
 	if idx < cutoff: 
