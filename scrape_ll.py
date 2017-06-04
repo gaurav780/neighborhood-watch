@@ -10,7 +10,7 @@ ll_fips = {}
 ll_buck = {}
 lat_longs = pkl.load(open("lat_longs_50000.p","rb"))
 count = 0
-inc_file = open("../ACS_15_5YR_S1902_with_ann.csv","rb")
+inc_file = open("./ACS_15_5YR_S1902_with_ann.csv","rb")
 geoid_to_meaninc = {}
 for line in inc_file:
   data = line.split(',')
