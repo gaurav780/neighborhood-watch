@@ -8,6 +8,8 @@ import torchvision
 import torchvision.transforms as T
 from torchvision.datasets import ImageFolder
 import resnet #import BasicBlock
+from PIL import ImageFile
+
 """
 Example PyTorch script for finetuning a ResNet model on your own data.
 For this example we will use a tiny dataset of images from the COCO dataset.
@@ -91,6 +93,9 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 def main(args):
   # Figure out the datatype we will use; this will determine whether we run on
   # CPU or on GPU. Run on GPU by adding the command-line flag --use_gpu
+  ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
   dtype = torch.FloatTensor
   if args.use_gpu:
     dtype = torch.cuda.FloatTensor
