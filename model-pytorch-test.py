@@ -8,6 +8,8 @@ import torchvision
 import torchvision.transforms as T
 from torchvision.datasets import ImageFolder
 import resnet #import BasicBlock
+import torchvision.models as models
+from matplotlib import pyplot as plt
 """
 Example PyTorch script for finetuning a ResNet model on your own data.
 For this example we will use a tiny dataset of images from the COCO dataset.
@@ -87,6 +89,24 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 #         out = self.relu(out)
 
 #         return out
+
+def plot_kernels(tensor, num_cols=6):
+    if not tensor.ndim==4:
+        raise Exception("assumes a 4D tensor")
+    if not tensor.shape[-1]==3:
+        raise Exception("last dim needs to be 3 to plot")
+    num_kernels = tensor.shape[0]
+    num_rows = 1+ num_kernels // num_cols
+    fig = plt.figure(figsize=(num_cols,num_rows))
+    for i in range(tensor.shape[0]):
+        ax1 = fig.add_subplot(num_rows,num_cols,i+1)
+        ax1.imshow(tensor[i])
+        ax1.axis('off')
+        ax1.set_xticklabels([])
+        ax1.set_yticklabels([])
+
+    plt.subplots_adjust(wspace=0.1, hspace=0.1)
+    plt.show()
 
 def main(args):
   # Figure out the datatype we will use; this will determine whether we run on
@@ -237,6 +257,13 @@ def main(args):
     print('Train accuracy: ', train_acc)
     print('Val accuracy: ', val_acc)
     print()
+
+  torch.save(model, './layer4-1000imgtest.pytorch')
+  weights = model.double()
+  body_model = [i for i in weights.children()][0]
+  layer1 = body_model[0]
+  tensor = layer1.weight.data.numpy()
+  plot_kernels(tensor)
 
 
 def run_epoch(model, loss_fn, loader, optimizer, dtype):
