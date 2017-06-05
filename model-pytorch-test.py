@@ -261,8 +261,8 @@ def main(args):
   torch.save(model, './layer4-1000imgtest.pytorch')
   weights = model.double()
   body_model = [i for i in weights.children()][0]
-  layer1 = body_model[0]
-  tensor = layer1.weight.data.numpy()
+  #layer1 = body_model[0]
+  tensor = body_model.weight.data.numpy()
   plot_kernels(tensor)
 
 
