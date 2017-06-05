@@ -161,7 +161,11 @@ def main(args):
   # First load the pretrained ResNet-18 model; this will download the model
   # weights from the web the first time you run it.
   model = torchvision.models.resnet18(pretrained=True)
+  print "LAYER 3:"
+  print model.layer3
+  print "LAYER 4:"
   print model.layer4#.shape
+
 
   # Reinitialize the last layer of the model. Each pretrained model has a
   # slightly different structure, but from the ResNet class definition
@@ -170,10 +174,18 @@ def main(args):
   num_classes = len(train_dset.classes)
   model.fc = nn.Linear(model.fc.in_features, num_classes)
   ## arg3 = num basic blocks 
+  model.inplanes = 128
+  model.layer3 = model._make_layer(resnet.BasicBlock, 256, 2, stride=2)
   model.inplanes = 256
   model.layer4 = model._make_layer(resnet.BasicBlock, 512, 2, stride=2) 
   print "--------------"
-  print model.layer4
+  print "LAYER 3:"
+  print model.layer3
+  print "LAYER 4:"
+  print model.layer4#.shape
+
+#        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+
 
   # = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
   #                             bias=False)
@@ -192,13 +204,16 @@ def main(args):
     param.requires_grad = False
   for param in model.fc.parameters():
     param.requires_grad = True
+  for param in model.layer3.parameters():
+    param.requires_grad = True
   for param in model.layer4.parameters():
     param.requires_grad = True
 
   # Construct an Optimizer object for updating the last layer only.
   optimizer = torch.optim.Adam(
     [{'params': model.fc.parameters()}, 
-    {'params': model.layer4.parameters()}], lr=1e-3)
+    {'params': model.layer4.parameters()},
+    {'params': model.layer3.parameters()}], lr=1e-3)
     #model.fc.parameters(), model.layer3.parameters(), 
   #optimizerl3 = torch.optim.Adam(model.layer3.parameters(), lr=1e-3)
 
