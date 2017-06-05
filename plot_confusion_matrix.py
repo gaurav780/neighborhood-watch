@@ -93,16 +93,33 @@ count = 0
 for line in lines: 
   div = line.split() 
   # url | True label | predicted label
-  y_true.append(div[1])
-  y_pred.append(div[2])
+  # is med = 2, low = 1, high = 0
+  ground_truth = ''
+  if int(div[1]) == 0: 
+    ground_truth = 'high'
+  elif int(div[1]) == 1: 
+    ground_truth = 'low'
+  else: 
+    ground_truth = 'med' 
+  y_true.append(ground_truth)
+
+  pred = ''
+  if int(div[2]) == 0: 
+    pred = 'high'
+  elif int(div[2]) == 1: 
+    pred = 'low'
+  else: 
+    pred = 'med' 
+  y_pred.append(pred)
 
 
 # Compute confusion matrix
-cnf_matrix = confusion_matrix(y_true, y_pred)
+class_names = ['low', 'med', 'high']
+
+cnf_matrix = confusion_matrix(y_true, y_pred, labels = class_names)
 np.set_printoptions(precision=2)
 
 # Plot non-normalized confusion matrix
-class_names = ['low', 'med', 'high']
 
 plt.figure()
 plot_confusion_matrix(cnf_matrix, classes=class_names,
