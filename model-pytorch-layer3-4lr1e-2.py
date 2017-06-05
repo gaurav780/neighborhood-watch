@@ -218,7 +218,7 @@ def main(args):
   optimizer = torch.optim.Adam(
     [{'params': model.fc.parameters()}, 
     {'params': model.layer4.parameters()},
-    {'params': model.layer3.parameters()}], lr=1e-4)
+    {'params': model.layer3.parameters()}], lr=1e-2)
     #model.fc.parameters(), model.layer3.parameters(), 
   #optimizerl3 = torch.optim.Adam(model.layer3.parameters(), lr=1e-3)
 
@@ -258,7 +258,7 @@ def main(args):
     print('Val accuracy: ', val_acc)
     print()
 
-  torch.save(model, './layer3-4_50k-lr1e-4.pytorch')
+  torch.save(model, './layer3-4_50k-lr1e-2.pytorch')
 
 
 def run_epoch(model, loss_fn, loader, optimizer, dtype):
