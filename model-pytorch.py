@@ -138,8 +138,8 @@ def main(args):
   # https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py#L111
   num_classes = len(train_dset.classes)
   model.fc = nn.Linear(model.fc.in_features, num_classes)
-  model.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
-                               bias=False)
+  # model.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
+  #                              bias=False)
 
   # Cast the model to the correct datatype, and create a loss function for
   # training the model.
@@ -155,12 +155,12 @@ def main(args):
     param.requires_grad = False
   for param in model.fc.parameters():
     param.requires_grad = True
-  for param in model.conv1.parameters():
-    param.requires_grad = True
+  # for param in model.conv1.parameters():
+  #   param.requires_grad = True
 
   # Construct an Optimizer object for updating the last layer only.
   optimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-3)
-  optimizer = torch.optim.Adam(model.conv1.parameters(), lr=1e-3)
+  # optimizer = torch.optim.Adam(model.conv1.parameters(), lr=1e-3)
 
 
   # Update only the last layer for a few epochs.
