@@ -74,7 +74,7 @@ def show_saliency_maps(X, y):
         print (Variable(X[i]).data).cpu().numpy().shape
         plt.subplot(2, N, i + 1)
         #plt.imshow((Variable(X[i]).data).cpu().numpy().reshape((224,224,3)))
-        plt.imshow(img)
+        plt.imshow(np.asarray(deprocess(X)))
         plt.axis('off')
         plt.title('high')
         plt.subplot(2, N, N + i + 1)
