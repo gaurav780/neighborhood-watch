@@ -166,10 +166,10 @@ def main(args):
   # First load the pretrained ResNet-18 model; this will download the model
   # weights from the web the first time you run it.
   model = torchvision.models.resnet18(pretrained=True)
-  print "LAYER 3:"
-  print model.layer3
-  print "LAYER 4:"
-  print model.layer4#.shape
+  # print "LAYER 3:"
+  # print model.layer3
+  # print "LAYER 4:"
+  # print model.layer4#.shape
 
 
   # Reinitialize the last layer of the model. Each pretrained model has a
@@ -183,11 +183,11 @@ def main(args):
   model.layer3 = model._make_layer(resnet.BasicBlock, 256, 2, stride=2)
   model.inplanes = 256
   model.layer4 = model._make_layer(resnet.BasicBlock, 512, 2, stride=2) 
-  print "--------------"
-  print "LAYER 3:"
-  print model.layer3
-  print "LAYER 4:"
-  print model.layer4#.shape
+  # print "--------------"
+  # print "LAYER 3:"
+  # print model.layer3
+  # print "LAYER 4:"
+  # print model.layer4#.shape
 
 #        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
 
@@ -267,6 +267,8 @@ def run_epoch(model, loss_fn, loader, optimizer, dtype):
   """
   # Set the model to training mode
   model.train()
+  tot_loss = 0 
+  num = 0 
   for x, y in loader:
     # The DataLoader produces Torch Tensors, so we need to cast them to the
     # correct datatype and wrap them in Variables.
@@ -281,12 +283,17 @@ def run_epoch(model, loss_fn, loader, optimizer, dtype):
     # Run the model forward to compute scores and loss.
     scores = model(x_var)
     loss = loss_fn(scores, y_var)
-    print 'Loss: ' + str(loss)  
+    tot_loss += loss
+    num += 1
+    # print 'Loss: ' + str(loss)  
 
     # Run the model backward and take a step using the optimizer.
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
+  avg_loss = tot_loss / float(num)
+  print 'Loss: ' + str(avg_loss)  
+
 
 
 def check_accuracy(model, loader, dtype):
