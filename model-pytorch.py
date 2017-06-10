@@ -56,7 +56,7 @@ parser.add_argument('--use_gpu', action='store_true')
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
-FILENAME = "misclassified.txt"
+FILENAME = "misclassified-6-10.txt"
 
 def main(args):
   # Figure out the datatype we will use; this will determine whether we run on

@@ -58,6 +58,8 @@ parser.add_argument('--use_gpu', action='store_true')
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
+FILENAME = "misclassified-6-10a.txt"
+
 
 # class BasicBlock(nn.Module):
 #     expansion = 1
@@ -155,7 +157,7 @@ def main(args):
   val_dset = ImageFolder(args.val_dir, transform=val_transform)
   val_loader = DataLoader(val_dset,
                   batch_size=args.batch_size,
-                  num_workers=args.num_workers)
+                  num_workers=args.num_workers, shuffle=False)
 
   # Now that we have set up the data, it's time to set up the model.
   # For this example we will finetune a ResNet-18 model which has been
@@ -166,10 +168,10 @@ def main(args):
   # First load the pretrained ResNet-18 model; this will download the model
   # weights from the web the first time you run it.
   model = torchvision.models.resnet18(pretrained=True)
-  print "LAYER 3:"
-  print model.layer3
-  print "LAYER 4:"
-  print model.layer4#.shape
+  # print "LAYER 3:"
+  # print model.layer3
+  # print "LAYER 4:"
+  # print model.layer4.shape
 
 
   # Reinitialize the last layer of the model. Each pretrained model has a
@@ -183,11 +185,11 @@ def main(args):
   model.layer3 = model._make_layer(resnet.BasicBlock, 256, 2, stride=2)
   model.inplanes = 256
   model.layer4 = model._make_layer(resnet.BasicBlock, 512, 2, stride=2) 
-  print "--------------"
-  print "LAYER 3:"
-  print model.layer3
-  print "LAYER 4:"
-  print model.layer4#.shape
+  # print "--------------"
+  # print "LAYER 3:"
+  # print model.layer3
+  # print "LAYER 4:"
+  # print model.layer4#.shape
 
 #        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
 
@@ -230,8 +232,8 @@ def main(args):
     run_epoch(model, loss_fn, train_loader, optimizer, dtype)
 
     # Check accuracy on the train and val sets.
-    train_acc = check_accuracy(model, train_loader, dtype)
-    val_acc = check_accuracy(model, val_loader, dtype)
+    train_acc = check_accuracy(model, train_dset, train_loader, dtype, False, FILENAME)
+    val_acc = check_accuracy(model, val_dset, val_loader, dtype, False, FILENAME)
     print('Train accuracy: ', train_acc)
     print('Val accuracy: ', val_acc)
     print()
@@ -252,13 +254,16 @@ def main(args):
     print('Starting epoch %d / %d' % (epoch + 1, args.num_epochs2))
     run_epoch(model, loss_fn, train_loader, optimizer, dtype)
 
-    train_acc = check_accuracy(model, train_loader, dtype)
-    val_acc = check_accuracy(model, val_loader, dtype)
+    train_acc = check_accuracy(model, train_dset, train_loader, dtype, False, FILENAME)
+    if epoch == args.num_epochs2-1:
+      val_acc = check_accuracy(model, val_dset, val_loader, dtype, True, FILENAME)
+    else:
+      val_acc = check_accuracy(model, val_dset, val_loader, dtype, False, FILENAME)
     print('Train accuracy: ', train_acc)
     print('Val accuracy: ', val_acc)
     print()
 
-  torch.save(model, './layer3-4_50k-lr1e-4.pytorch')
+  torch.save(model, './layer3-4_50k-6-10.pytorch')
 
 
 def run_epoch(model, loss_fn, loader, optimizer, dtype):
@@ -281,21 +286,25 @@ def run_epoch(model, loss_fn, loader, optimizer, dtype):
     # Run the model forward to compute scores and loss.
     scores = model(x_var)
     loss = loss_fn(scores, y_var)
-    print 'Loss: ' + str(loss)  
+    # print 'Loss: ' + str(loss)  
 
     # Run the model backward and take a step using the optimizer.
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
 
-
-def check_accuracy(model, loader, dtype):
+def check_accuracy(model, folder, loader, dtype, write_bool, filename):
   """
   Check the accuracy of the model.
   """
   # Set the model to eval mode
+  f = None
+  if write_bool:
+    f = open(filename, "w+")
   model.eval()
   num_correct, num_samples = 0, 0
+  wrong_set = None
+  batch_num = 0
   for x, y in loader:
     # Cast the image data to the correct type and wrap it in a Variable. At
     # test-time when we do not need to compute gradients, marking the Variable
@@ -307,11 +316,45 @@ def check_accuracy(model, loader, dtype):
     scores = model(x_var)
     _, preds = scores.data.cpu().max(1)
     num_correct += (preds == y).sum()
+    mask = (preds == y)
+    mins, indices = torch.min(mask,0)
+    for i in range(x.size(0)):
+      path, true_class = folder.imgs[batch_num * args.batch_size + i]
+      pred_class =  preds[i][0]
+      if write_bool:
+        f.write("%s\t%d\t%d\n" % (path, true_class, pred_class))
     num_samples += x.size(0)
-
+    batch_num += 1
   # Return the fraction of datapoints that were correctly classified.
   acc = float(num_correct) / num_samples
+  if write_bool:
+    f.close()
   return acc
+
+## ORIG check-accuracy 
+# def check_accuracy(model, loader, dtype):
+#   """
+#   Check the accuracy of the model.
+#   """
+#   # Set the model to eval mode
+#   model.eval()
+#   num_correct, num_samples = 0, 0
+#   for x, y in loader:
+#     # Cast the image data to the correct type and wrap it in a Variable. At
+#     # test-time when we do not need to compute gradients, marking the Variable
+#     # as volatile can reduce memory usage and slightly improve speed.
+#     x_var = Variable(x.type(dtype), volatile=True)
+
+#     # Run the model forward, and compare the argmax score with the ground-truth
+#     # category.
+#     scores = model(x_var)
+#     _, preds = scores.data.cpu().max(1)
+#     num_correct += (preds == y).sum()
+#     num_samples += x.size(0)
+
+#   # Return the fraction of datapoints that were correctly classified.
+#   acc = float(num_correct) / num_samples
+#   return acc
 
 
 if __name__ == '__main__':
