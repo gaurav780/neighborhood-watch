@@ -14,7 +14,8 @@ import numpy as np
 from PIL import Image
 
 model = torch.load("layer4-1000imgtest.pytorch")
-img = Image.open('images_1000/val/high/37.815612_-122.230960_60.000000.png')
+#img = Image.open('images_1000/val/low/37.720509_-122.178601_60.000000.png')
+img = Image.open('images_1000/val/low/37.812240_-122.258277_60.000000.png')
 img.load()
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -72,11 +73,11 @@ def show_saliency_maps(X, y):
     N = X.size()[0]
     for i in range(N):
         print (Variable(X[i]).data).cpu().numpy().shape
-        plt.subplot(2, N, i + 1)
+        plt.subplot(2, 1, 1)
         #plt.imshow((Variable(X[i]).data).cpu().numpy().reshape((224,224,3)))
         plt.imshow(np.asarray(deprocess(X)))
         plt.axis('off')
-        plt.title('high')
+        plt.title('low')
         plt.subplot(2, N, N + i + 1)
         plt.imshow(saliency[i], cmap=plt.cm.hot)
         plt.axis('off')
