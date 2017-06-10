@@ -19,7 +19,7 @@ for line in inc_file:
   geoid_to_meaninc[geoid] = mean_inc
 
 #def fetch_url(latlong):
-for latlong in lat_longs[:10000]:
+for latlong in lat_longs:
   if count%100 == 0:
     print count
   count +=1

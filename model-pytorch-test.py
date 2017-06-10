@@ -263,6 +263,7 @@ def main(args):
   body_model = [i for i in weights.children()][0]
   layer1 = body_model[0]
   tensor = layer1.weight.data.numpy()
+
   plot_kernels(tensor)
 
 
