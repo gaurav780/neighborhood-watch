@@ -7,7 +7,9 @@ from torch.utils.data import DataLoader
 import torchvision
 import torchvision.transforms as T
 from torchvision.datasets import ImageFolder
-
+import resnet #import BasicBlock
+import torchvision.models as models
+from matplotlib import pyplot as plt
 """
 Example PyTorch script for finetuning a ResNet model on your own data.
 For this example we will use a tiny dataset of images from the COCO dataset.
@@ -57,6 +59,54 @@ parser.add_argument('--use_gpu', action='store_true')
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
+# class BasicBlock(nn.Module):
+#     expansion = 1
+
+#     def __init__(self, inplanes, planes, stride=1, downsample=None):
+#         super(BasicBlock, self).__init__()
+#         self.conv1 = conv3x3(inplanes, planes, stride)
+#         self.bn1 = nn.BatchNorm2d(planes)
+#         self.relu = nn.ReLU(inplace=True)
+#         self.conv2 = conv3x3(planes, planes)
+#         self.bn2 = nn.BatchNorm2d(planes)
+#         self.downsample = downsample
+#         self.stride = stride
+
+#     def forward(self, x):
+#         residual = x
+
+#         out = self.conv1(x)
+#         out = self.bn1(out)
+#         out = self.relu(out)
+
+#         out = self.conv2(out)
+#         out = self.bn2(out)
+
+#         if self.downsample is not None:
+#             residual = self.downsample(x)
+
+#         out += residual
+#         out = self.relu(out)
+
+#         return out
+
+def plot_kernels(tensor, num_cols=6):
+    if not tensor.ndim==4:
+        raise Exception("assumes a 4D tensor")
+    if not tensor.shape[-1]==3:
+        raise Exception("last dim needs to be 3 to plot")
+    num_kernels = tensor.shape[0]
+    num_rows = 1+ num_kernels // num_cols
+    fig = plt.figure(figsize=(num_cols,num_rows))
+    for i in range(tensor.shape[0]):
+        ax1 = fig.add_subplot(num_rows,num_cols,i+1)
+        ax1.imshow(tensor[i])
+        ax1.axis('off')
+        ax1.set_xticklabels([])
+        ax1.set_yticklabels([])
+
+    plt.subplots_adjust(wspace=0.1, hspace=0.1)
+    plt.show()
 
 def main(args):
   # Figure out the datatype we will use; this will determine whether we run on
@@ -131,6 +181,7 @@ def main(args):
   # First load the pretrained ResNet-18 model; this will download the model
   # weights from the web the first time you run it.
   model = torchvision.models.resnet18(pretrained=True)
+  print model.layer4#.shape
 
   # Reinitialize the last layer of the model. Each pretrained model has a
   # slightly different structure, but from the ResNet class definition
@@ -138,8 +189,14 @@ def main(args):
   # https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py#L111
   num_classes = len(train_dset.classes)
   model.fc = nn.Linear(model.fc.in_features, num_classes)
-  # model.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
-  #                              bias=False)
+  ## arg3 = num basic blocks 
+  model.inplanes = 256
+  model.layer4 = model._make_layer(resnet.BasicBlock, 512, 2, stride=2) 
+  print "--------------"
+  print model.layer4
+
+  # = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
+  #                             bias=False)
 
   # Cast the model to the correct datatype, and create a loss function for
   # training the model.
@@ -155,12 +212,16 @@ def main(args):
     param.requires_grad = False
   for param in model.fc.parameters():
     param.requires_grad = True
-  # for param in model.conv1.parameters():
-  #   param.requires_grad = True
+  for param in model.layer4.parameters():
+    param.requires_grad = True
 
   # Construct an Optimizer object for updating the last layer only.
-  optimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-3)
-  # optimizer = torch.optim.Adam(model.conv1.parameters(), lr=1e-3)
+  optimizer = torch.optim.Adam(
+    [{'params': model.fc.parameters()}, 
+    {'params': model.layer4.parameters()}], lr=1e-3)
+    #model.fc.parameters(), model.layer3.parameters(), 
+  #optimizerl3 = torch.optim.Adam(model.layer3.parameters(), lr=1e-3)
+
 
   # Update only the last layer for a few epochs.
   for epoch in range(args.num_epochs1):
@@ -196,6 +257,13 @@ def main(args):
     print('Train accuracy: ', train_acc)
     print('Val accuracy: ', val_acc)
     print()
+
+  torch.save(model, './layer4-1000imgtest.pytorch')
+  weights = model.double()
+  body_model = [i for i in weights.children()][0]
+  layer1 = body_model[0]
+  tensor = layer1.weight.data.numpy()
+  plot_kernels(tensor)
 
 
 def run_epoch(model, loss_fn, loader, optimizer, dtype):

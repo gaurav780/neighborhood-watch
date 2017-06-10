@@ -2,63 +2,69 @@ import pickle as pkl
 import shutil 
 import os 
 
-lat_longs =pkl.load(open("lat_longs_1000.p","rb"))
-ll_to_buckets = pkl.load(open("ll_to_buckets_1000.p","rb"))
+# lat_longs =pkl.load(open("lat_longs_50000.p","rb"))
+low_cutoff = 1608
+med_cutoff = 2378
+high_cutoff = 2938
 
-files = os.listdir('./images_1000/val')
-cutoff = int(len(files)*0.8) 
+low_files = os.listdir('./train/low/')
+med_files = os.listdir('./train/med/')
+high_files = os.listdir('./train/high/')
+
 idx = 0 
+# for file in low_files: 
+# 	if idx == low_cutoff: 
+# 		break
+# 	file = './train/low/' + file
+# 	shutil.move(file, './val/low/')
+# 	idx += 1
 
-for file in files: 
-	if file == 'high' or file == 'low' or file == 'med': 
-		continue 
-	print "Processing " + file 
-	f_split = file.split("_")
-	ll = (f_split[0], f_split[1])
-	# print (ll) 
-	if ll in ll_to_buckets:
-		label = ll_to_buckets[ll]
-	else:
-		print "Not in map!"
-		continue
-	file = './images_1000/val/' + file 
-	# if idx == 20: 
-	# 	break 
-	# if idx < cutoff: 
-	# 	if (label == 0): 
-	# 		shutil.move(file, 'train/low/')
-	# 	elif (label == 1): 
-	# 		shutil.move(file, 'train/med/')
-	# 	else: 
-	# 		shutil.move(file, 'train/high') 
-	# else: 
-	if (label == 0): 
-		shutil.move(file, 'val/low/')
-	elif (label == 1): 
-		shutil.move(file, 'val/med/')
-	else: 
-		shutil.move(file, 'val/high') 
+# for file in med_files: 
+# 	if idx == med_cutoff: 
+# 		break
+# 	file = './train/med/' + file
+# 	shutil.move(file, './val/med/')
+# 	idx += 1
+
+for file in high_files: 
+	if idx == high_cutoff: 
+		break
+	file = './train/high/' + file
+	shutil.move(file, './val/high/')
 	idx += 1
 
-# for ll in lat_longs[:3]: 
-# 	print ll
 
-# print ll_to_buckets
+# ll_to_buckets = pkl.load(open("ll_to_bucket_50k_fullcorpus.p","rb"))
 
-# for ll in lat_longs[:800]:
-# 	label = ll_to_buckets[ll]
-# 	if (label == 0): 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'train/low/')
-# 	elif (label == 1): 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'train/med/')
+# files = os.listdir('./images/')
+# cutoff = int(len(files)*0.8) 
+# idx = 0 
+
+# for file in files: 
+# 	if file == 'high' or file == 'low' or file == 'med': 
+# 		continue 
+# 	print "Processing " + file 
+# 	f_split = file.split("_")
+# 	ll = (f_split[0], f_split[1])
+# 	# print (ll) 
+# 	if ll in ll_to_buckets:
+# 		label = ll_to_buckets[ll]
+# 	else:
+# 		print "Not in map!"
+# 		continue
+# 	file = './images/' + file 
+# 	if idx < cutoff: 
+# 		if (label == 0): 
+# 			shutil.move(file, 'train/low/')
+# 		elif (label == 1): 
+# 			shutil.move(file, 'train/med/')
+# 		else: 
+# 			shutil.move(file, 'train/high/') 
 # 	else: 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'train/high/')
-
-# for ll in lat_longs[800:]:
-# 	label = ll_to_buckets[ll]
-# 	if (label == 0): 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'val/low/')
-# 	elif (label == 1): 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'val/med/')
-# 	else: 
-# 		shutil.move('images_test/'+ll[0]+'_'+ll[1]+'_60.000000.png', 'val/high/')
+# 		if (label == 0): 
+# 			shutil.move(file, 'val/low/')
+# 		elif (label == 1): 
+# 			shutil.move(file, 'val/med/')
+# 		else: 
+# 			shutil.move(file, 'val/high/') 
+# 	idx += 1
