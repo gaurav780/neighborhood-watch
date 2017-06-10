@@ -162,7 +162,6 @@ def main(args):
   optimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-3)
   # optimizer = torch.optim.Adam(model.conv1.parameters(), lr=1e-3)
 
-
   # Update only the last layer for a few epochs.
   for epoch in range(args.num_epochs1):
     # Run an epoch over the training data.

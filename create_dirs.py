@@ -1,8 +1,8 @@
 import pickle as pkl
 import shutil 
 
-lat_longs =pkl.load(open("lat_longs_10000.p","rb"))
-ll_to_buckets = pkl.load(open("ll_to_buckets_10000.p","rb"))
+lat_longs =pkl.load(open("lat_longs_1000.p","rb"))
+ll_to_buckets = pkl.load(open("ll_to_buckets_1000.p","rb"))
 
 for ll in lat_longs[:8000]:
 	label = ll_to_buckets[ll]
