@@ -3,7 +3,7 @@ import gpxpy.geo
 import sys
 
 f = open('misclassified-50k.txt','rb')
-#out = open('misclassified-50k-clustering5.txt','w+')
+out = open('misclassified-50k-clustering40.txt','w+')
 
 pts = []
 correct = 0
@@ -63,7 +63,7 @@ for pt in pts:
     new_lab = '2'
   if new_lab == true_lab:
     new_correct +=1
-  #out.write(name+'\t'+true_lab+'\t'+new_lab+'\n')
+  out.write(name+'\t'+true_lab+'\t'+new_lab+'\n')
 
 print 'initial accuracy:', correct/float(len(pts))
 print 'new_accuracy',new_correct/float(len(pts))

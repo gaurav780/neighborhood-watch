@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
+import os
 
 import torchvision
 import torchvision.transforms as T
@@ -14,9 +15,7 @@ import numpy as np
 from PIL import Image
 
 model = torch.load("layer4-1000imgtest.pytorch")
-#img = Image.open('images_1000/val/low/37.720509_-122.178601_60.000000.png')
-img = Image.open('images_1000/val/low/37.812240_-122.258277_60.000000.png')
-img.load()
+
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
@@ -54,7 +53,7 @@ def compute_saliency_maps(X, y, model):
     ##############################################################################
     #                             END OF YOUR CODE                               #
     ##############################################################################
-    return saliency
+    return sum(sum(saliency))
 
 def show_saliency_maps(X, y):
     # Convert X and y from numpy arrays to Torch Tensors
@@ -64,7 +63,7 @@ def show_saliency_maps(X, y):
 
     # Compute saliency maps for images in X
     saliency = compute_saliency_maps(X_tensor, y_tensor, model)
-
+    return saliency
     # Convert the saliency map from Torch Tensor to numpy array and show images
     # and saliency maps together.
     saliency = np.array([saliency.numpy()])
@@ -118,6 +117,16 @@ def blur_image(X, sigma=1):
     X.copy_(torch.Tensor(X_np).type_as(X))
     return X
 #data = np.asarray(img,dtype="int32")
-X= preprocess(img)
-y = np.array([2])
-show_saliency_maps(X, y)
+low_files = os.listdir('images_1000/val/low/')
+best_imgs = []
+best_val = 0
+for f in low_files:
+  img = Image.open("images_1000/val/low/"+f)
+  img.load()
+  X= preprocess(img)
+  y = np.array([2])
+  val = show_saliency_maps(X, y)
+  best_imgs.append((f,val))
+
+s= sorted(best_imgs,lambda x:x[1])
+print s[:10]
