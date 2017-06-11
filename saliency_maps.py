@@ -116,17 +116,21 @@ def blur_image(X, sigma=1):
     X_np = gaussian_filter1d(X_np, sigma, axis=3)
     X.copy_(torch.Tensor(X_np).type_as(X))
     return X
+
+def getKey(item):
+  return item[1]
+
 #data = np.asarray(img,dtype="int32")
-low_files = os.listdir('images_1000/val/low/')
+low_files = os.listdir('images_50000/val/low/')
 best_imgs = []
 best_val = 0
 for f in low_files:
-  img = Image.open("images_1000/val/low/"+f)
+  img = Image.open("images_50000/val/low/"+f)
   img.load()
   X= preprocess(img)
   y = np.array([2])
   val = show_saliency_maps(X, y)
   best_imgs.append((f,val))
 
-s= sorted(best_imgs,lambda x:x[1])
+s= sorted(best_imgs,key=getKey,reverse=True)
 print s[:10]
