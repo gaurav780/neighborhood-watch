@@ -86,7 +86,7 @@ def plot_confusion_matrix(cm, classes,
 y_true = []
 y_pred = []
 
-with open('misclassified.txt') as f:
+with open('misclassified-50k.txt') as f:
     lines = f.readlines()
 
 count = 0 
