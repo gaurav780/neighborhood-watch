@@ -2,8 +2,8 @@ import numpy as np
 import gpxpy.geo
 import sys
 
-f = open('misclassified-50k.txt','rb')
-out = open('misclassified-50k-clustering40.txt','w+')
+f = open('misclassified-test.txt','rb')
+out = open('misclassified-test-clustering40.txt','w+')
 
 pts = []
 correct = 0
@@ -12,11 +12,20 @@ for line in f:
   img_name = line[0]
   true_lab = line[1]
   pred_lab = line[2]
-  lat = img_name.split('_')[1].split('/')[-1]
-  lng = img_name.split('_')[2]
+
+  lat = img_name.split('_')[0].split('/')[-1]
+  lng = img_name.split('_')[1]
+  # lng = lng.split('.')[0]
+
+  # print "lat: ", lat
+  # print "long: ", lng
+  # # print lng 
+  # # print lat
+  # print line 
   pts.append((float(lat),float(lng),pred_lab,true_lab,img_name))
   if true_lab == pred_lab:
     correct +=1
+  # break 
 
 k = int(sys.argv[1])
 new_correct = 0

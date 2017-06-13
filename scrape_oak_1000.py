@@ -7,7 +7,7 @@ import pickle as pkl
 import threading
 data_file = '../cityid_url-3.txt'
 # output_dir = 'images_50000/'
-output_dir = 'images_50000/'
+output_dir = 'test_images/'
 num_images = 0
 '''
 urls = []
@@ -28,7 +28,8 @@ rand_urls = urls[rand_ind]
 pkl.dump(rand_urls, open('random_urls_50000.p', 'w+'))
 
 '''
-rand_urls = pkl.load(open('random_urls_50000.p','rb'))
+# rand_urls = pkl.load(open('random_urls_50000.p','rb'))
+rand_urls = pkl.load(open('test_urls.p','rb'))
 
 
 
